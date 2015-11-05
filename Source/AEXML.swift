@@ -103,12 +103,12 @@ public class AEXMLElement: NSObject {
     public static let errorElementName = "AEXMLError"
     
     // The first element with given name **(AEXMLError element if not exists)**.
-    public subscript(key: String) -> AEXMLElement {
+    public subscript(key: String) -> AEXMLElement? {
         if name == AEXMLElement.errorElementName {
             return self
         } else {
             let filtered = children.filter { $0.name == key }
-            return filtered.count > 0 ? filtered.first! : AEXMLElement(AEXMLElement.errorElementName, value: "element <\(key)> not found")
+            return filtered.first
         }
     }
     
@@ -124,7 +124,7 @@ public class AEXMLElement: NSObject {
     /// Returns number of all elements with equal name as `self`.
     public var count: Int { return all?.count ?? 0 }
 
-    private func allWithCondition(fulfillCondition: (element: AEXMLElement) -> Bool) -> [AEXMLElement]? {
+    private func allWithCondition(fulfillCondition: (element: AEXMLElement) -> Bool) -> [AEXMLElement] {
         var found = [AEXMLElement]()
         if let elements = all {
             for element in elements {
@@ -132,9 +132,9 @@ public class AEXMLElement: NSObject {
                     found.append(element)
                 }
             }
-            return found.count > 0 ? found : nil
+            return found
         } else {
-            return nil
+            return []
         }
     }
     
@@ -145,7 +145,7 @@ public class AEXMLElement: NSObject {
         
         :returns: Optional Array of found XML elements.
     */
-    public func allWithValue(value: String) -> [AEXMLElement]? {
+    public func allWithValue(value: String) -> [AEXMLElement] {
         let found = allWithCondition { (element) -> Bool in
             return element.value == value
         }
@@ -159,7 +159,7 @@ public class AEXMLElement: NSObject {
     
         :returns: Optional Array of found XML elements.
     */
-    public func allWithAttributes(attributes: [String : String]) -> [AEXMLElement]? {
+    public func allWithAttributes(attributes: [String : String]) -> [AEXMLElement] {
         let found = allWithCondition { (element) -> Bool in
             var countAttributes = 0
             for (key, value) in attributes {
